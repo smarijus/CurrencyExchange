@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import lt.currency.exchange.R;
+import lt.currency.exchange.common.exceptions.SameCurrencyTypeException;
 import lt.currency.exchange.common.exceptions.NotEnoughMoneyException;
 import lt.currency.exchange.constans.enums.CurrencyType;
 import lt.currency.exchange.constans.enums.PayFeeType;
@@ -34,14 +35,14 @@ public class CurrentBalanceUseCase {
 
     public Observable<List<CurrentBalanceItem>> loadCurrentBalance() {
         List<CurrentBalanceItem> results = new ArrayList<>();
-        for (Map.Entry<CurrencyType, BigDecimal> key : dataHolder.currentBalance.entrySet()) {
+        for (Map.Entry<CurrencyType, BigDecimal> key : dataHolder.getCurrentBalance().entrySet()) {
             results.add(new CurrentBalanceItem(key));
         }
         return Observable.just(results);
     }
 
     public Observable<List<CurrencyType>> loadCurrentFromCurrency() {
-        return Observable.just(new ArrayList<>(dataHolder.currentBalance.keySet()));
+        return Observable.just(new ArrayList<>(dataHolder.getCurrentBalance().keySet()));
     }
 
     public Observable<List<CurrencyType>> loadToCurrency(CurrencyType fromCurrencyType) {
@@ -54,10 +55,14 @@ public class CurrentBalanceUseCase {
 
     public Observable<String> exchange(String fromAmountInput, CurrencyType fromCurrencyType, CurrencyType toCurrencyType) {
         BigDecimal fromAmount = parse(fromAmountInput);
-        BigDecimal currentBalance = dataHolder.currentBalance.get(fromCurrencyType);
+        BigDecimal currentBalance = dataHolder.getCurrentBalance().get(fromCurrencyType);
         PayFeeType payFeeType = PayFeeType.get(fromAmount, dataHolder.getTransactionCount());
         BigDecimal payFee = payFeeType.getPayFeeAmount(fromAmount);
         BigDecimal discharge = fromAmount.add(payFee);
+
+        if (fromCurrencyType == toCurrencyType) {
+            return Observable.error(new SameCurrencyTypeException());
+        }
 
         if (currentBalance.subtract(discharge).compareTo(BigDecimal.ZERO) < 0) {
             return Observable.error(new NotEnoughMoneyException());
@@ -90,7 +95,7 @@ public class CurrentBalanceUseCase {
     }
     public Observable<List<CurrentBalanceItem>> loadPaymentFee() {
         List<CurrentBalanceItem> results = new ArrayList<>();
-        for (Map.Entry<CurrencyType, BigDecimal> key : dataHolder.totalFee.entrySet()) {
+        for (Map.Entry<CurrencyType, BigDecimal> key : dataHolder.getTotalFee().entrySet()) {
             results.add(new CurrentBalanceItem(key));
         }
         return Observable.just(results);

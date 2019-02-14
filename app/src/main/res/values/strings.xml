@@ -9,5 +9,7 @@
     <string name="pay_fee_free">Nemokamai</string>
     <string name="pay_fee_regular">%s\%% komisinis mokestis</string>
     <string name="label_total_payment_fee">Komisiniai mokesčiai:</string>
+    <string name="error_same_currency_type">Konvertuoti į tą pačią valiutą negalima.</string>
+    <string name="error_no_network">Nėra Interneto, patikrinkite nustatymus</string>
 
 </resources>

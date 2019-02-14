@@ -68,7 +68,7 @@ public class HomeController extends BaseViewController implements IHomeView {
 
     @Override
     protected void onViewBound(@NonNull View view) {
-        fromAmountView.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(5,2)});
+        fromAmountView.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(6,2)});
 
         balanceRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         balanceRecyclerView.setAdapter(currentBalanceAdapter);
@@ -111,7 +111,9 @@ public class HomeController extends BaseViewController implements IHomeView {
             fromCurrencyAdapter.setData(fromCurrencyItems);
             int position = fromCurrencyItems.indexOf(lastFromCurrencyItems);
             if (position != fromCurrencyView.getSelectedItemPosition()) {
-                homePresenter.loadToCurrency(fromCurrencyItems.get(position < 0 ? 0 : position));
+                int newPosition = position < 0 ? 0 : position;
+                fromCurrencyView.setSelection(newPosition);
+                homePresenter.loadToCurrency(fromCurrencyItems.get(newPosition));
             }
 
             return;

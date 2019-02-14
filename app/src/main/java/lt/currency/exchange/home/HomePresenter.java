@@ -6,6 +6,7 @@ import io.reactivex.disposables.Disposable;
 import lt.currency.exchange.base.BasePresenter;
 import lt.currency.exchange.base.ErrorHandler;
 import lt.currency.exchange.common.CurrentBalanceUseCase;
+import lt.currency.exchange.common.exceptions.NotEnoughMoneyException;
 import lt.currency.exchange.constans.enums.CurrencyType;
 
 public class HomePresenter extends BasePresenter<IHomeView> {
@@ -58,7 +59,15 @@ public class HomePresenter extends BasePresenter<IHomeView> {
                             loadData();
                             getView().setMessage(exchangeMessage);
                         },
-                        throwable -> getView().showError(throwable, errorHandler.getErrorMessage(throwable))));
+                        throwable -> showError(throwable, errorHandler.getErrorMessage(throwable))));
+    }
+
+    private void showError(Throwable throwable, String errorMessage) {
+        if (throwable instanceof NotEnoughMoneyException) {
+            getView().setMessage(errorMessage);
+        } else {
+            getView().showError(throwable, errorMessage);
+        }
     }
 
     public void onTextChange(String inputValue) {

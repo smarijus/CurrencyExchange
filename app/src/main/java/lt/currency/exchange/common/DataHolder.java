@@ -12,17 +12,17 @@ public class DataHolder {
 
     public static final int FREE_PAY_FEE_COUNT = 5;
 
-    Map<CurrencyType, BigDecimal> currentBalance = new EnumMap<CurrencyType, BigDecimal>(CurrencyType.class) {{
+    private Map<CurrencyType, BigDecimal> currentBalance = new EnumMap<CurrencyType, BigDecimal>(CurrencyType.class) {{
         put(CurrencyType.EUR, new BigDecimal(1000));
         put(CurrencyType.USD, new BigDecimal(0));
         put(CurrencyType.JPY, new BigDecimal(0));
     }};
 
-    Map<CurrencyType, BigDecimal> totalFee = new EnumMap<CurrencyType, BigDecimal>(CurrencyType.class) {{
+    private Map<CurrencyType, BigDecimal> totalFee = new EnumMap<CurrencyType, BigDecimal>(CurrencyType.class) {{
         put(CurrencyType.EUR, new BigDecimal(0));
     }};
 
-    int transactionCount = 0;
+    private int transactionCount = 0;
 
     @Inject
     public DataHolder() {
@@ -35,6 +35,14 @@ public class DataHolder {
 
     public void increaseTransactionCount() {
         transactionCount += 1;
+    }
+
+    public Map<CurrencyType, BigDecimal> getCurrentBalance() {
+        return currentBalance;
+    }
+
+    public Map<CurrencyType, BigDecimal> getTotalFee() {
+        return totalFee;
     }
 
     public void onIncomes(CurrencyType currency, BigDecimal amount) {
