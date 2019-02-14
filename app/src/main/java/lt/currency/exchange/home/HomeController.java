@@ -80,7 +80,6 @@ public class HomeController extends BaseViewController implements IHomeView {
                 fromAmountView.getText().toString(),
                 fromCurrencyAdapter.getItem(fromCurrencyView.getSelectedItemPosition()),
                 toCurrencyAdapter.getItem(toCurrencyView.getSelectedItemPosition())));
-
     }
 
     @Override
@@ -108,14 +107,19 @@ public class HomeController extends BaseViewController implements IHomeView {
     @Override
     public void onCurrencyTypesReady(List<CurrencyType> fromCurrencyItems) {
         if (fromCurrencyAdapter != null) {
-            fromCurrencyAdapter.setData(fromCurrencyItems);
             int position = fromCurrencyItems.indexOf(lastFromCurrencyItems);
-            if (position != fromCurrencyView.getSelectedItemPosition()) {
-                int newPosition = position < 0 ? 0 : position;
-                fromCurrencyView.setSelection(newPosition);
-                homePresenter.loadToCurrency(fromCurrencyItems.get(newPosition));
-            }
+            int currentPosition = fromCurrencyView.getSelectedItemPosition();
+            int newPosition = position < 0 ? 0 : position;
+            fromCurrencyAdapter.setData(fromCurrencyItems);
 
+            if (position != currentPosition) {
+                if (newPosition != currentPosition) {
+                    fromCurrencyView.setSelection(newPosition);
+                } else {
+                    lastFromCurrencyItems = fromCurrencyItems.get(newPosition);
+                    homePresenter.loadToCurrency(lastFromCurrencyItems);
+                }
+            }
             return;
         }
         fromCurrencyAdapter = new CurrencyAdapter(getActivity(), fromCurrencyItems);

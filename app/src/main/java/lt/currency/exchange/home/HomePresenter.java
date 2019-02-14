@@ -55,6 +55,8 @@ public class HomePresenter extends BasePresenter<IHomeView> {
 
     public void onNextClick(String fromAmount, CurrencyType fromCurrencyType, CurrencyType toCurrencyType) {
         subscriptions.add(currentBalanceUseCase.exchange(fromAmount, fromCurrencyType, toCurrencyType)
+                .doOnSubscribe(o -> getView().enableConvertButton(false))
+                .doOnTerminate(() -> getView().enableConvertButton(true))
                 .subscribe(exchangeMessage -> {
                             loadData();
                             getView().setMessage(exchangeMessage);
